@@ -1,5 +1,6 @@
 ### generates fake data for 'salesdb' ###
 
+import psycopg2
 import requests
 import swapi
 import numpy as np
@@ -12,17 +13,15 @@ pd.set_option('display.max_columns', None)
 fake = Faker()
 
 ### Columns for salesdb
-# poster_content | string | "Millennium Falcon"		-> 
-# quantity | int | 7								-> random int, 0 < x < 100
-# price | decimal | 2.9								-> random float (two-decimals),  0 < x < $250
-# email | string | "sally_skywalker@gmail.com"		-> random emails from Faker
-# sales_rep | string | "tej@swposters.com"			-> create 12 fake employees, create email from their names
-# promo_code | string | "radio"						-> 
+# poster_content | string | "Millennium Falcon"
+# quantity | int | 7						
+# price | decimal | 2.9						
+# email | string | "sally_skywalker@gmail.com"
+# sales_rep | string | "tej@swposters.com"	
+# promo_code | string | "radio"				
 
 ### TODO
-# 2. poster content
 # 4. Pull in other Data with API
-# 5. Export to CSV
 # 6. Update SQL Database
 
 
@@ -44,22 +43,54 @@ def create_rows(number_of_rows, max_sales_per_order, max_price, number_of_employ
 
 ### Export the data
 def export_sw_data(data_to_export):
-	# replace with creating and writing to a temporary csv
-	print(data_to_export)
-	print('printed to salesdb.csv')
-	data_to_export.to_csv('salesdb.csv')
+
+	# create database connection
+	db_connect = psycopg2.connect(
+		host = "db",
+		database = "postgres",
+		user = "postgres",
+		password = "postgres"
+	)
+
+	# psycopg2 won't autocommit
+	# https://stackoverflow.com/questions/18068901/python-psycopg2-not-inserting-into-postgresql-table/18237335#18237335
+	db_connect.autocommit = True
+
+	# cursor
+	cur = db_connect.cursor()
+
+	# create table
+	try:
+		table_creation = cur.execute("CREATE TABLE salesdb (id serial PRIMARY KEY, poster_content varchar, quantity smallint, price decimal, email varchar, sales_rep varchar, promo_code varchar);")
+	except:
+		pass
+
+	# delete previous commits
+	try:
+		cur.execute("DELETE FROM salesdb;")
+	except:
+		pass
+
+	# insert new data
+	for index, row in data_to_export.iterrows():
+		insert_row = cur.execute("INSERT INTO salesdb (poster_content, quantity, price, email, sales_rep, promo_code) VALUES (%s, %s, %s, %s, %s, %s)", (row['poster_content'], row['quantity'], row['price'], row['email'], row['sales_rep'], row['promo_code']))
+
+	# debug
+	# print("salesdb table output: ")
+	# print(cur.execute("SELECT COUNT(*) FROM salesdb;"))
+	# print(cur.fetchall())
+
+	db_connect.close()
 
 ### Generate Poster Content
 def generate_poster_content(number_of_rows):
 	posters_inventory = []
 
 	# generate the posters that we carry
-	# i would try to get fewer, or randomize this, but if i did then I'd have 
-	# to make a bunch of calls to the api, and the api doesn't let you filter by attribute
-	# it seems like a waste to pull all of this data, but I'm not sure how to do so differently
-	# had issues with swapi library, switched to using requests
 	endpoints = ["starships/", "planets/", "people/"]
 	for endpoint in endpoints:
+		# should this be wrapped in a try/except
+		# can we trust this data source?
 		response = requests.get(url="https://swapi.dev/api/" + endpoint)
 		data = response.json()['results']
 		for item in data:
@@ -112,9 +143,3 @@ created_sw_data = create_rows(1000, max_sales_per_order, max_price, number_of_em
 
 # export data
 exported_data = export_sw_data(created_sw_data)
-
-
-
-
-
-
