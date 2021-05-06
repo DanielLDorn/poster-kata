@@ -1,0 +1,5 @@
+swapi
+requests
+numpy
+pandas
+Faker
