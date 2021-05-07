@@ -9,10 +9,13 @@ import pandas as pd
 from faker import Faker
 from faker.providers.internet import Provider
 import datetime
+from db_util import *
 
 ### Generate the rows
 def create_rows(number_of_rows, max_sales_per_order, max_price, number_of_employees):
 	
+	fake = Faker()
+
 	# add columns to DataFrame
 	df = pd.DataFrame(columns=['poster_content', 'quantity', 'price', 'email', 'sales_rep', 'promo_code'])
 
@@ -20,7 +23,7 @@ def create_rows(number_of_rows, max_sales_per_order, max_price, number_of_employ
 	df['poster_content'] = generate_poster_content(number_of_rows)
 	df['quantity'] = np.random.randint(1, max_sales_per_order, number_of_rows)
 	df['price'] = np.around(np.random.uniform(1.5, max_price, number_of_rows), decimals=2)
-	df['email'] = generate_purchaser_emails(number_of_rows)
+	df['email'] = [fake.ascii_email() for _ in range(number_of_rows)]
 	df['sales_rep'] = generate_sales_rep(number_of_rows, number_of_employees)
 	df['promo_code'] = generate_promo_codes(number_of_rows)
 
@@ -30,31 +33,15 @@ def create_rows(number_of_rows, max_sales_per_order, max_price, number_of_employ
 def export_sw_data(data_to_export):
 
 	# create database connection
-	db_connect = psycopg2.connect(
-		host = "db",
-		database = "postgres",
-		user = "postgres",
-		password = "postgres"
-	)
-
-	# psycopg2 won't autocommit
-	# https://stackoverflow.com/questions/18068901/python-psycopg2-not-inserting-into-postgresql-table/18237335#18237335
-	db_connect.autocommit = True
-
-	# cursor
+	db_connect = connect_to_db()
 	cur = db_connect.cursor()
 
 	# create table
 	try:
 		table_creation = cur.execute("CREATE TABLE salesdb (id serial PRIMARY KEY, poster_content varchar, quantity smallint, price decimal, email varchar, sales_rep varchar, promo_code varchar);")
 	except:
-		pass
-
-	# delete previous commits
-	try:
+		# delete rows if already created
 		cur.execute("DELETE FROM salesdb;")
-	except:
-		pass
 
 	# insert new data
 	for index, row in data_to_export.iterrows():
@@ -71,8 +58,6 @@ def export_sw_data(data_to_export):
 
 	db_connect.close()
 
-
-
 ### Generate Poster Content
 def generate_poster_content(number_of_rows):
 	posters_inventory = []
@@ -81,7 +66,6 @@ def generate_poster_content(number_of_rows):
 	endpoints = ["starships/", "planets/", "people/"]
 	for endpoint in endpoints:
 		# should this be wrapped in a try/except
-		# can we trust this data source?
 		response = requests.get(url="https://swapi.dev/api/" + endpoint)
 		data = response.json()['results']
 		for item in data:
@@ -89,32 +73,16 @@ def generate_poster_content(number_of_rows):
 
 	return np.random.choice(posters_inventory, number_of_rows)
 
-### Generate Emails
-def generate_purchaser_emails(number_of_rows):
-	fake = Faker()
-
-	emails = []
-	for i in range(0, number_of_rows):
-		emails.append(fake.ascii_email())
-	return emails
-
 ### Generate Sales Rep Emails
 def generate_sales_rep(number_of_rows, number_of_employees):
 	fake = Faker()
 	
 	# generate random style for each employee, company loathes consistency
-	email_styles = np.random.choice(["underscore", "dots", "initials"], number_of_employees)
-
-	# generate employee emails
-	sales_reps_emails = []
-	for email_style in email_styles:
-		if email_style == "underscore":
-			sales_rep_email = fake.first_name().lower() + "_" + fake.last_name().lower() + "@swposters.com"
-		elif email_style == "dots":
-			sales_rep_email = fake.first_name().lower() + "." + fake.last_name().lower() + "@swposters.com"
-		elif email_style == "initials":
-			sales_rep_email = fake.first_name()[0].lower() + fake.first_name()[0].lower() + fake.last_name()[0].lower() + "@swposters.com"
-		sales_reps_emails.append(sales_rep_email)
+	sales_reps_emails = np.random.choice([
+		fake.first_name().lower() + "_" + fake.last_name().lower() + "@swposters.com", # underscore
+		fake.first_name().lower() + "." + fake.last_name().lower() + "@swposters.com", # dots
+		fake.first_name()[0].lower() + fake.first_name()[0].lower() + fake.last_name()[0].lower() + "@swposters.com" # initials
+		], number_of_employees)
 
 	# apply employee emails to all fields
 	return np.random.choice(sales_reps_emails, number_of_rows)
@@ -123,5 +91,3 @@ def generate_sales_rep(number_of_rows, number_of_employees):
 def generate_promo_codes(number_of_rows):
 	promo_codes = ["tatooine", "luke", "princess_leia", "chewbacca", "scythe", "if_its_free_give_me_three", "march20"]
 	return np.random.choice(promo_codes, number_of_rows)
-
-

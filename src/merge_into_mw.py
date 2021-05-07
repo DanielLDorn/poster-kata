@@ -11,17 +11,21 @@ import pandas as pd
 from faker import Faker
 from faker.providers.internet import Provider
 import re
+from db_util import *
 
 
 # grab the unique
-def get_unique_spaceships(db_connect):
+def get_unique_spaceships():
 
-	# cursor
+	# database connection
+	db_connect = connect_to_db()
 	cur = db_connect.cursor()
 
 	# create table -> are returned as tuples
 	cur.execute("SELECT DISTINCT poster_content FROM salesdb;")
 	unique_spaceships = cur.fetchall()
+
+	db_connect.close()
 
 	return unique_spaceships
 
@@ -48,22 +52,18 @@ def get_movies_for_each_spaceship(unique_spaceships):
 	return spaceship_movies
 
 # combine and upload sales
-def combine_and_upload(spaceship_movies, db_connect):
+def combine_and_upload(spaceship_movies):
 
-	# cursor
+	# database connection
+	db_connect = connect_to_db()
 	cur = db_connect.cursor()
 
 	# create table
 	try:
 		table_creation = cur.execute("CREATE TABLE mw (id serial PRIMARY KEY, poster_content varchar, film_title varchar, film_date varchar, quantity smallint, price decimal, sales_rep varchar, promo_code varchar);")
 	except:
-		pass
-
-	# delete previous commits
-	try:
+		# delete rows if already created
 		cur.execute("DELETE FROM mw;")
-	except:
-		pass
 
 	# grab all sales, exclude 
 	cur.execute("SELECT poster_content, quantity, price, sales_rep, promo_code FROM salesdb")
@@ -103,3 +103,4 @@ def combine_and_upload(spaceship_movies, db_connect):
 	cur.execute("SELECT * FROM mw limit 5;")
 	print(cur.fetchall())
 
+	db_connect.close()

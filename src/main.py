@@ -12,9 +12,10 @@ from faker.providers.internet import Provider
 import datetime
 from generate_salesdb import *
 from merge_into_mw import *
+from db_util import *
 
 
-### GENERATING DATA CALLS ###
+### Generate salesdb table ###
 
 pd.set_option('display.max_columns', None)
 
@@ -30,25 +31,13 @@ created_sw_data = create_rows(rows_to_create, max_sales_per_order, max_price, nu
 # export data
 exported_data = export_sw_data(created_sw_data)
 
-### Creates Merged Tables ###
-
-# Open Database Connection
-db_connect = psycopg2.connect(
-	host = "db",
-	database = "postgres",
-	user = "postgres",
-	password = "postgres"
-)
-db_connect.autocommit = True
+### Creates mw table from salesdb and swapi ###
 
 # Grab Unique spaceships
-unique_spaceships = get_unique_spaceships(db_connect)
+unique_spaceships = get_unique_spaceships()
 
 # Grab the movies associated with each spaceship
 movies_w_spaceships = get_movies_for_each_spaceship(unique_spaceships)
 
 # # create a row for each sale w/ new movie data
-rows = combine_and_upload(movies_w_spaceships, db_connect)
-
-# Close Database Connection
-db_connect.close()
+rows = combine_and_upload(movies_w_spaceships)
