@@ -16,6 +16,11 @@ def create_rows(number_of_rows, max_sales_per_order, max_price, number_of_employ
 	
 	fake = Faker()
 
+	# generate helper table
+	# a many-to-many table of ships (poster_content -> filtered to only ships) <-> films
+ 	# data gets loaded in generate_poster_content(), which saves api calls
+	create_helper_table()
+
 	# add columns to DataFrame
 	df = pd.DataFrame(columns=['poster_content', 'quantity', 'price', 'email', 'sales_rep', 'promo_code'])
 
@@ -53,7 +58,7 @@ def export_sw_data(data_to_export):
 	print("salesdb table output: ")
 	cur.execute("SELECT COUNT(*) FROM salesdb;")
 	print(cur.fetchone())
-	cur.execute("SELECT * FROM salesdb limit 5;")
+	cur.execute("SELECT * FROM salesdb limit 25;")
 	print(cur.fetchall())
 
 	db_connect.close()
@@ -62,14 +67,34 @@ def export_sw_data(data_to_export):
 def generate_poster_content(number_of_rows):
 	posters_inventory = []
 
+	# database connection
+	db_connect = connect_to_db()
+	cur = db_connect.cursor()
+
 	# generate the posters that we carry
 	endpoints = ["starships/", "planets/", "people/"]
 	for endpoint in endpoints:
 		# should this be wrapped in a try/except
 		response = requests.get(url="https://swapi.dev/api/" + endpoint)
 		data = response.json()['results']
+
 		for item in data:
 			posters_inventory.append(item['name'])
+
+			# add ships-to-films helper table
+			if endpoint == "starships/":
+				# add films -> url endpoint -> http://swapi.dev/api/films/1/
+				film_urls = item['films']
+				film_cache = {}
+				for film_url in film_urls:
+					if film_url not in film_cache:
+						film = requests.get(url=film_url).json()
+						film_cache[film_url] = film
+					else:
+						film = film_cache[film_url]
+					insert_row = cur.execute("INSERT INTO ships_to_films (starship, film_title, film_date) VALUES (%s, %s, %s)", (item['name'] , film['title'], film['release_date']))
+
+	db_connect.close()
 
 	return np.random.choice(posters_inventory, number_of_rows)
 
@@ -91,3 +116,19 @@ def generate_sales_rep(number_of_rows, number_of_employees):
 def generate_promo_codes(number_of_rows):
 	promo_codes = ["tatooine", "luke", "princess_leia", "chewbacca", "scythe", "if_its_free_give_me_three", "march20"]
 	return np.random.choice(promo_codes, number_of_rows)
+
+
+
+def create_helper_table():
+	# database connection
+	db_connect = connect_to_db()
+	cur = db_connect.cursor()
+
+	# create table
+	try:
+		table_creation = cur.execute("CREATE TABLE ships_to_films (id serial PRIMARY KEY, starship varchar, film_title varchar, film_date varchar);")
+	except:
+		# delete rows if already created
+		cur.execute("DELETE FROM ships_to_films;")
+
+	db_connect.close()

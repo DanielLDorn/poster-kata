@@ -11,7 +11,7 @@ from faker import Faker
 from faker.providers.internet import Provider
 import datetime
 from generate_salesdb import *
-from merge_into_mw import *
+from merge_into_dw import *
 from db_util import *
 
 
@@ -22,7 +22,7 @@ pd.set_option('display.max_columns', None)
 # constants
 max_sales_per_order = 100
 max_price = 2500
-number_of_employees = 12
+number_of_employees = 18
 rows_to_create = 1000
 
 # generate pandas data
@@ -31,13 +31,12 @@ created_sw_data = create_rows(rows_to_create, max_sales_per_order, max_price, nu
 # export data
 exported_data = export_sw_data(created_sw_data)
 
-### Creates mw table from salesdb and swapi ###
 
-# Grab Unique spaceships
-unique_spaceships = get_unique_spaceships()
 
-# Grab the movies associated with each spaceship
-movies_w_spaceships = get_movies_for_each_spaceship(unique_spaceships)
+### Create 'dw' table from join of salesdb and ships_to_films ###
 
-# # create a row for each sale w/ new movie data
-rows = combine_and_upload(movies_w_spaceships)
+# create dw table
+create_dw_table()
+
+# merge and upload
+merge_dw_table()
