@@ -16,5 +16,5 @@ script:
   - ls
   - docker version
   - docker-compose version
-  - docker-compose up
+  - docker-compose up --build
   - docker ps
