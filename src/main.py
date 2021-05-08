@@ -17,8 +17,6 @@ from db_util import *
 
 ### Generate salesdb table ###
 
-pd.set_option('display.max_columns', None)
-
 # constants
 max_sales_per_order = 100
 max_price = 2500
