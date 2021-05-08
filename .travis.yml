@@ -7,7 +7,7 @@ before_script:
   - pip install docker-compose
 
 script:
-  - docker compose up --remove-orphans
+  - docker compose up
   - docker ps
   - ls
 
