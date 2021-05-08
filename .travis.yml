@@ -5,5 +5,7 @@ services:
 
 script:
   - ls
+  - docker version
+  - docker-compose version
   - docker-compose up
   - docker ps
