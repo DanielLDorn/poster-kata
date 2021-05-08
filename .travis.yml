@@ -1,13 +1,9 @@
-language: python
+Language: python
 
 services:
   - docker
 
-before_script: 
-  - pip install docker-compose
-
 script:
+  - ls
   - docker compose up
   - docker ps
-  - ls
-
