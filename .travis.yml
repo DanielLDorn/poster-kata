@@ -13,8 +13,5 @@ services:
   - docker
 
 script:
-  - ls
-  - docker version
-  - docker-compose version
-  - docker-compose up --build
+  - docker-compose up --remove-orphans -build
   - docker ps
