@@ -17,5 +17,5 @@ services:
   - docker
 
 script:
-  - docker compose up --remove-orphans --build
+  - docker compose up --build
   - docker ps
