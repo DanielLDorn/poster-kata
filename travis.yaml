@@ -10,3 +10,6 @@ before_script:
 
 script:
   - docker compose up --remove-orphans
+  - docker ps
+
+
