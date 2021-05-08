@@ -1,6 +1,4 @@
 language: python
-python:
-  - stable
 
 services:
   - docker
