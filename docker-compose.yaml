@@ -19,7 +19,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 45s
-      timeout: 40s
+      timeout: 100s
       retries: 5
   app:
     build: .
