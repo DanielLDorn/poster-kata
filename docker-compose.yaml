@@ -21,15 +21,15 @@ services:
       interval: 2s
       timeout: 30s
       retries: 15
-  app:
-    command: ["./wait-for-postgres.sh", "db", "python", "./src/main.py"]
-    build: .
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - python-postgres
+  # app:
+  #   command: ["./wait-for-postgres.sh", "db", "python", "./src/main.py"]
+  #   build: .
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   networks:
+  #     - python-postgres
 networks:
   python-postgres: {}
