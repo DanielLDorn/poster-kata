@@ -10,4 +10,4 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 
-# CMD [ "python", "./src/main.py" ] # move to docker-compose.yaml
+CMD [ "python", "./src/main.py" ]
