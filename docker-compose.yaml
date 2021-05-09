@@ -1,21 +1,21 @@
-version: "3"
+version: "3.2"
 
 services:
   db:
     image: postgres
     restart: always
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
+    # volumes:
+    #   - ./data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    networks:
-      - python-postgres
-    expose:
-      - 5432
-    ports:
-      - 127.0.0.1:5432:5432
+    # networks:
+    #   - python-postgres
+    # expose:
+    #   - 5432
+    # ports:
+    #   - 127.0.0.1:5432:5432
     # healthcheck:
     #   test: ["CMD-SHELL", "pg_isready -U postgres"]
     #   interval: 10s
