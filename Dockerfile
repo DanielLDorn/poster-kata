@@ -10,4 +10,5 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 
+CMD [ "docker", "ps"]
 CMD [ "python", "./src/main.py" ]
