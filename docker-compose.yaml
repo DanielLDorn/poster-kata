@@ -22,8 +22,8 @@ services:
       timeout: 30s
       retries: 15
   app:
-    build: .
     command: ["./wait-for-postgres.sh", "db", "python", "./src/main.py"]
+    build: .
     ports:
       - "8000:8000"
     depends_on:
