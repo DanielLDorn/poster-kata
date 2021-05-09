@@ -3,7 +3,7 @@ version: "3"
 services:
   db:
     image: postgres
-    # restart: always
+    restart: always
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
@@ -21,17 +21,17 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 5
-  app:
-    # command: ["./wait-for-postgres.sh", "db", "python", "app.py"]
-    build: .
-    # restart: always
-    ports:
-      - "8000:8000"
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
-    networks:
-      - python-postgres
+  # app:
+  #   # command: ["./wait-for-postgres.sh", "db", "python", "app.py"]
+  #   build: .
+  #   # restart: always
+  #   ports:
+  #     - "8000:8000"
+  #   # depends_on:
+  #   #   db:
+  #   #     condition: service_healthy
+  #   networks:
+  #     - python-postgres
 networks:
   python-postgres: {}
 
