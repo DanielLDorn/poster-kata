@@ -18,4 +18,5 @@ services:
 
 script:
   - docker-compose up --build
+  - docker inspect
   - docker ps
