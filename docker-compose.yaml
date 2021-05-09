@@ -23,6 +23,7 @@ services:
       retries: 3
   app:
     build: .
+    command: ["./wait-for-postgres.sh", "db", "python", "./src/main.py"]
     ports:
       - "8000:8000"
     depends_on:
