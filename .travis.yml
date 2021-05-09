@@ -20,3 +20,6 @@ script:
   - docker-compose up --build
   - docker inspect poster-kata_db_1
   - docker ps
+  - sleep 20
+  - docker inspect poster-kata_db_1
+  - docker ps
