@@ -3,4 +3,4 @@
 
 Starships are the bomb.
 
-[![Build Status](https://travis-ci.com/github/DanielLDorn/poster-kata.svg?branch=master)](https://travis-ci.com/github/DanielLDorn/poster-kata)
+[![Build Status](https://api.travis-ci.com/DanielLDorn/poster-kata.svg?branch=master&status=created)](https://travis-ci.com/github/DanielLDorn/poster-kata)
