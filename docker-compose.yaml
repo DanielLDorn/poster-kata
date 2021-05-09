@@ -25,6 +25,7 @@ services:
   app:
     # command: ["./wait-for-postgres.sh", "db", "python", "./src/main.py"]
     build: .
+    restart: always
     ports:
       - "8000:8000"
     depends_on:
