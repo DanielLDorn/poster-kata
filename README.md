@@ -6,7 +6,7 @@
 
 :star::ship:	Starships are the bomb.	:rocket::rocket::rocket:
 
-This is a demo ETL exercise that generates a table called 'salesdb', hits an API https://swapi.dev/, and merges the table with the api data to create the table 'dw'. The database and python code in this demo are deployed in a docker container using travis-ci.
+This is a demo ETL exercise that generates a table called `salesdb`, hits an API https://swapi.dev/, and merges the table with the api data to create the table `dw`. The database and python code in this demo are deployed in a docker container using travis-ci.
 
 ## Tech Stack
 - Containers:		Docker
@@ -16,19 +16,10 @@ This is a demo ETL exercise that generates a table called 'salesdb', hits an API
 - CI:				Travis-CI
 - Hosting:			???
 
-## Schema
-
-sales_db
-
 ## Code Structure
 
 ./src/db_util.py -> connects to database
 ./src/main.py -> calls functions to create tables and data
 ./src/generate_salesdb.py -> functions that create `salesdb` table, hit swapi api, and create helper table
 ./src/merge_into_dw.py -> functions that create merged table
-
-## Production
-???
-
-
-
+./src/flask_app.py -> generates the flask app

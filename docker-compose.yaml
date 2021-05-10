@@ -4,8 +4,6 @@ services:
   db:
     image: postgres
     restart: always
-    # volumes:
-    #   - ./data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -22,16 +20,17 @@ services:
       timeout: 5s
       retries: 5
   app:
-    # command: ["./wait-for-postgres.sh", "db", "python", "app.py"]
     build: .
-    # restart: always
     ports:
-      - "8000:8000"
+      - 5000:5000
+    expose:
+      - 8080
     depends_on:
       db:
         condition: service_healthy
     networks:
       - python-postgres
+
 networks:
   python-postgres: {}
 
