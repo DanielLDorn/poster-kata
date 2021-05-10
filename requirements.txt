@@ -1,7 +1,6 @@
 swapi>=0.1.3
 requests
 datetime
-flask
 numpy>=1.19
 pandas>=1.1
 Faker>=8.1.2
