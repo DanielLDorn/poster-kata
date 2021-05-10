@@ -1,5 +1,7 @@
 # simple unit tests to confirm setup
 
+from db_util import *
+
 # create database connection
 db_connect = connect_to_db()
 cur = db_connect.cursor()

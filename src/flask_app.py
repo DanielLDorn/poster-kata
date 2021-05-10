@@ -19,6 +19,7 @@ if "TEST" in os.environ:
 		test_salesdb()
 		test_helper_table()
 		test_helper_table()
+		print('okay ---> yep')
 		sys.exit(0)
 
 

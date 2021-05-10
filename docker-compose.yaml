@@ -20,6 +20,8 @@ services:
       timeout: 5s
       retries: 5
   app:
+    environment:
+      - TEST="travis"
     build: .
     ports:
       - 5000:5000

@@ -17,4 +17,4 @@ services:
   - docker
 
 script:
-  - docker-compose up --build -e TEST='travis'
+  - docker-compose up --build
