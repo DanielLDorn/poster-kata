@@ -17,7 +17,6 @@ services:
   - docker
 
 script:
-  - docker-compose up --build
+  - docker-compose up --build -e TEST='travis'
   - docker inspect poster-kata_db_1
   - docker ps
-  - pytest

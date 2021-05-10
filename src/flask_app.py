@@ -1,14 +1,27 @@
-# flask app
+1# flask app
 
 from flask import Flask, render_template
 from db_util import *
 import main
+import os
+import * from tests
 
 # create database connection
 db_connect = connect_to_db()
 cur = db_connect.cursor()
 
 app = Flask(__name__)
+
+
+# made it here then run tests
+if "TEST" in os.environ:
+	if os.environ["TEST"] == "travis":
+		test_salesdb()
+		test_helper_table()
+		test_helper_table()
+		sys.exit(0)
+
+
 
 @app.route('/')
 def main_app():
